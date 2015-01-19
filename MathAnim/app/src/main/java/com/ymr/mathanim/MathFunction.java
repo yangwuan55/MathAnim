@@ -3,6 +3,7 @@ package com.ymr.mathanim;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.graphics.Point;
+import android.graphics.PointF;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public abstract class MathFunction {
         void onUpdate(float x,float y);
     }
 
-    private List<FunctionUpdateListener> listeners = new ArrayList<>();
+    private List<FunctionUpdateListener> listeners = new ArrayList<FunctionUpdateListener>();
 
     public void addListener(FunctionUpdateListener listener) {
         listeners.add(listener);
@@ -27,7 +28,7 @@ public abstract class MathFunction {
     public ValueAnimator.AnimatorUpdateListener animatorUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
-            float currX = (float) animation.getAnimatedValue();
+            float currX = (Float) animation.getAnimatedValue();
             float currY = getY(currX);
             if (rotate != 0) {
 
@@ -55,7 +56,7 @@ public abstract class MathFunction {
         this.rotate = rotate;
     }
 
-    public Animator create(Point start,Point end) {
+    public Animator create(PointF start,PointF end) {
         float r = (float) Math.sqrt(Math.pow(Math.abs(start.x - end.x),2) + Math.pow(Math.abs(start.y - end.y),2));
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, r);
         valueAnimator.addUpdateListener(animatorUpdateListener);

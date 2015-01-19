@@ -1,47 +1,42 @@
 package com.ymr.mathanim;
 
 import android.animation.Animator;
+import android.graphics.PointF;
+import android.util.Log;
 
 /**
- * y = ax^2 + bx + c
+ * y = a(x-h) + k
  * Created by ymr on 15-1-17.
  */
 public class ParabolicFunction extends MathFunction {
 
-    private float axisX;
-    private float axisY;
-    private float a,b,c;
+    private static final String TAG = "ParabolicFunction";
+    private PointF axis;
+    private float a;
     private boolean hasSetP;
-
-    public void setABC(float a,float b,float c) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
-    }
 
     @Override
     protected float getY(float x) {
-        return (float) (a*Math.pow(x,2)+b*x+c);
+        return (float) (a*Math.pow(x-axis.x,2) + axis.y);
     }
 
     @Override
     void setParameters(float... value) {
         hasSetP = true;
         a = value[0];
-        b = value[1];
-        c = value[2];
-    }
-
-    public void setAxisY(float axisY) {
-        this.axisY = axisY;
+        axis = new PointF(value[1],value[2]);
     }
 
     @Override
-    public Animator create(float x1, float x2) {
+    public Animator create(PointF start, PointF end) {
         if (!hasSetP) {
-            axisX = (x1 > x2 ? x1 - x2:x2 - x1) / 2;
-
+            float x = (float) Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2))/2;
+            float y = 2*x;
+            axis = new PointF(x,y);
+            a = (float) ((end.y-start.y)/(Math.pow(start.x-axis.x,2)-Math.pow(end.x-axis.x,2)));
+            Log.v(TAG,"axis = " + axis + " a = " + a);
         }
-        return super.create(x1, x2);
+
+        return super.create(start, end);
     }
 }
