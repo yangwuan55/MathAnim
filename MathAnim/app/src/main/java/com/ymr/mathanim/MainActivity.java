@@ -18,17 +18,27 @@ public class MainActivity extends Activity implements MathFunction.FunctionUpdat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         test = findViewById(R.id.test);
-        MathFunction mathFunction = new ParabolicFunction();
+        final MathFunction mathFunction = new ParabolicFunction();
+        mathFunction.create(new PointF(0,0),new PointF(400,400));
         mathFunction.addListener(this);
-        Animator animator = mathFunction.create(new PointF(0,50), new PointF(200,50));
-        animator.setDuration(3000);
-        animator.start();
+        mathFunction.setDuration(1000);
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mathFunction.start();
+            }
+        });
     }
 
     @Override
     public void onUpdate(float x, float y) {
-        Log.v(TAG,"X = " + x + " y = " + y);
-        test.setX(x);
-        test.setY(y);
+        Log.v(TAG, "X = " + x + " y = " + y);
+        test.setTranslationX(x);
+        test.setTranslationY(y);
+    }
+
+    @Override
+    public void onEnd() {
+
     }
 }

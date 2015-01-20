@@ -1,5 +1,7 @@
 package com.ymr.mathanim;
 
+import android.graphics.PointF;
+
 /**
  * y = ax + b
  *
@@ -23,5 +25,11 @@ public class LinearFunction extends MathFunction {
     void setParameters(float... value) {
         a = value[0];
         b = value[1];
+    }
+
+    @Override
+    public void create(PointF start, PointF end) {
+
+        super.create(start, end);
     }
 }

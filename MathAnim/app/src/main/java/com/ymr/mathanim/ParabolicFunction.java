@@ -27,16 +27,20 @@ public class ParabolicFunction extends MathFunction {
         axis = new PointF(value[1],value[2]);
     }
 
+    public void setAxis(PointF axis) {
+        hasSetP = true;
+        this.axis = axis;
+    }
+
     @Override
-    public Animator create(PointF start, PointF end) {
+    public void create(PointF start, PointF end) {
+        super.create(start,end);
         if (!hasSetP) {
-            float x = (float) Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2))/2;
-            float y = 2*x;
+            float x = targetDis/2;
+            float y = targetDis;
             axis = new PointF(x,y);
-            a = (float) ((end.y-start.y)/(Math.pow(start.x-axis.x,2)-Math.pow(end.x-axis.x,2)));
+            a = (float) ((-axis.y)/Math.pow(-axis.x,2));
             Log.v(TAG,"axis = " + axis + " a = " + a);
         }
-
-        return super.create(start, end);
     }
 }
