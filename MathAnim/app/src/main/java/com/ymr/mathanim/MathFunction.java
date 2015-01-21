@@ -14,13 +14,14 @@ import java.util.List;
  */
 public abstract class MathFunction implements Animator.AnimatorListener {
 
-    private float rotate;
+    protected float rotate;
     private ValueAnimator mAnimator;
     private long duration;
     private View view;
     private float originX;
     private float originY;
     protected float targetDis;
+    private boolean canStart;
 
     @Override
     public void onAnimationStart(Animator animation) {
@@ -29,7 +30,11 @@ public abstract class MathFunction implements Animator.AnimatorListener {
 
     @Override
     public void onAnimationEnd(Animator animation) {
-
+        if (listeners.size() != 0) {
+            for (FunctionUpdateListener listener : listeners) {
+                listener.onEnd();
+            }
+        }
     }
 
     @Override
@@ -71,8 +76,8 @@ public abstract class MathFunction implements Animator.AnimatorListener {
                 }
             }
             if (view != null) {
-                view.setX(originX + currX);
-                view.setY(originY + currY);
+                view.setX((int)(originX + currX + 0.5f));
+                view.setY((int)(originY + currY + 0.5f));
             }
         }
     };
@@ -84,28 +89,36 @@ public abstract class MathFunction implements Animator.AnimatorListener {
      */
     protected abstract float getY(float x);
 
-    /**
-     * example: y = ax + b    , value is a and b.
-     * @param value
-     */
-    abstract void setParameters(float... value);
-
     public void setRotate(float rotate) {
         this.rotate = rotate;
     }
 
     public void create(PointF start,PointF end) {
-        float x = end.x - start.x;
-        targetDis = (float) Math.sqrt(Math.pow(start.x - end.x,2) + Math.pow(start.y - end.y,2));
-        rotate = (float) Math.toDegrees(Math.acos(x/ targetDis));
-        mAnimator = ValueAnimator.ofFloat(0, targetDis);
-        mAnimator.addUpdateListener(animatorUpdateListener);
-        mAnimator.addListener(this);
+        if (start.equals(end)) {
+            canStart = false;
+        } else {
+            canStart = true;
+            float x = end.x - start.x;
+            targetDis = (float) Math.sqrt(Math.pow(start.x - end.x,2) + Math.pow(start.y - end.y,2));
+            if (end.x < start.x || end.y < start.y) {
+                targetDis = -targetDis;
+            }
+            rotate = (float) Math.toDegrees(Math.acos(x/ targetDis));
+            mAnimator = ValueAnimator.ofFloat(0, targetDis);
+            mAnimator.addUpdateListener(animatorUpdateListener);
+            mAnimator.addListener(this);
+        }
     }
 
     public void start() {
+        if (view != null) {
+            originX = view.getX();
+            originY = view.getY();
+        }
         mAnimator.setDuration(duration);
-        mAnimator.start();
+        if (canStart) {
+            mAnimator.start();
+        }
     }
 
     public void setDuration(long duration) {
@@ -118,12 +131,16 @@ public abstract class MathFunction implements Animator.AnimatorListener {
 
     public void moveTo(View view,PointF target) {
         this.view = view;
-        create(new PointF(0,0),target);
+        create(new PointF(view.getX(),view.getY()),target);
         start();
     }
 
     public void moveTo(PointF target) {
-        create(new PointF(0,0),target);
+        create(new PointF(view.getX(),view.getY()),target);
         start();
+    }
+
+    public ValueAnimator getAnimator() {
+        return mAnimator;
     }
 }

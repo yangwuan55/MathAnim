@@ -18,14 +18,13 @@ public class MainActivity extends Activity implements MathFunction.FunctionUpdat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         test = findViewById(R.id.test);
-        final MathFunction mathFunction = new ParabolicFunction();
-        mathFunction.create(new PointF(0,0),new PointF(400,400));
-        mathFunction.addListener(this);
+        final ParabolicFunction mathFunction = new ParabolicFunction();
         mathFunction.setDuration(1000);
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mathFunction.start();
+                mathFunction.setVerticeY(-1000);
+                mathFunction.moveTo(test,new PointF(600,400));
             }
         });
     }
