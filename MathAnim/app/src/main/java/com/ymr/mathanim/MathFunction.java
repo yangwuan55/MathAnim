@@ -2,8 +2,8 @@ package com.ymr.mathanim;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.graphics.Point;
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import java.util.List;
  */
 public abstract class MathFunction implements Animator.AnimatorListener {
 
+    private static final String TAG = "MathFunction";
     protected float rotate;
     private ValueAnimator mAnimator;
     private long duration;
@@ -22,6 +23,8 @@ public abstract class MathFunction implements Animator.AnimatorListener {
     private float originY;
     protected float targetDis;
     private boolean canStart;
+    private PointF startPoint;
+    private PointF endPoint;
 
     @Override
     public void onAnimationStart(Animator animation) {
@@ -35,6 +38,11 @@ public abstract class MathFunction implements Animator.AnimatorListener {
                 listener.onEnd();
             }
         }
+        if (view != null) {
+            originX = view.getX();
+            originY = view.getY();
+            Log.v(TAG,"originX = " + originX + " originY = " + originY);
+        }
     }
 
     @Override
@@ -45,6 +53,14 @@ public abstract class MathFunction implements Animator.AnimatorListener {
     @Override
     public void onAnimationRepeat(Animator animation) {
 
+    }
+
+    public PointF getStartPoint() {
+        return startPoint;
+    }
+
+    public PointF getEndPoint() {
+        return endPoint;
     }
 
     public interface FunctionUpdateListener{
@@ -94,16 +110,24 @@ public abstract class MathFunction implements Animator.AnimatorListener {
     }
 
     public void create(PointF start,PointF end) {
+        this.startPoint = start;
+        this.endPoint = end;
         if (start.equals(end)) {
             canStart = false;
         } else {
             canStart = true;
-            float x = end.x - start.x;
+            float x = Math.abs(end.x - start.x);
             targetDis = (float) Math.sqrt(Math.pow(start.x - end.x,2) + Math.pow(start.y - end.y,2));
-            if (end.x < start.x || end.y < start.y) {
-                targetDis = -targetDis;
-            }
             rotate = (float) Math.toDegrees(Math.acos(x/ targetDis));
+            if (end.x < start.x) {
+                if (end.y > start.y) {
+                    rotate = 180 - rotate;
+                } else if (end.y < start.y){
+                    rotate = 180 + rotate;
+                }
+            } else if (end.y < start.y) {
+                rotate = 360 - rotate;
+            }
             mAnimator = ValueAnimator.ofFloat(0, targetDis);
             mAnimator.addUpdateListener(animatorUpdateListener);
             mAnimator.addListener(this);
@@ -114,6 +138,7 @@ public abstract class MathFunction implements Animator.AnimatorListener {
         if (view != null) {
             originX = view.getX();
             originY = view.getY();
+            Log.v(TAG,"originX = " + originX + " originY = " + originY);
         }
         mAnimator.setDuration(duration);
         if (canStart) {
@@ -142,5 +167,13 @@ public abstract class MathFunction implements Animator.AnimatorListener {
 
     public ValueAnimator getAnimator() {
         return mAnimator;
+    }
+
+    @Override
+    public String toString() {
+        return "MathFunction{" +
+                "startPoint=" + startPoint +
+                ", endPoint=" + endPoint +
+                '}';
     }
 }

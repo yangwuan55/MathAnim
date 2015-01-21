@@ -18,15 +18,32 @@ public class MainActivity extends Activity implements MathFunction.FunctionUpdat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         test = findViewById(R.id.test);
-        final ParabolicFunction mathFunction = new ParabolicFunction();
-        mathFunction.setDuration(1000);
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mathFunction.setVerticeY(-1000);
-                mathFunction.moveTo(test,new PointF(600,400));
+                Polygon polygon = new Polygon();
+                polygon.setView(test);
+                try {
+                    polygon.create(new PointF(test.getX(), test.getY()), getMathFunction(new PointF(100, 200), new PointF(50, 60)),
+                            getMathFunction(new PointF(50,60),new PointF(300,200)));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                }
+                polygon.start();
+                /*MathFunction mathFunction = new LinearFunction();
+                mathFunction.setDuration(1000);
+                mathFunction.moveTo(test,new PointF(test.getX()-150,test.getY()-300));*/
             }
         });
+    }
+
+    private MathFunction getMathFunction(PointF start,PointF end) {
+        MathFunction mathFunction = new ParabolicFunction();
+        mathFunction.create(start,end);
+        mathFunction.setDuration(1000);
+        return mathFunction;
     }
 
     @Override

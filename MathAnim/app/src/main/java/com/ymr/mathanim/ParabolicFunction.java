@@ -43,11 +43,11 @@ public class ParabolicFunction extends MathFunction {
         super.create(start,end);
         float x = targetDis/2;
         float y = targetDis;
-        if (hasSetP) {
-            y = verticeY;
-        }
         if (verticeDirection == VERTICE_DIRECTION_DOWN) {
             y = -y;
+        }
+        if (hasSetP) {
+            y = verticeY;
         }
         vertice = new PointF(x,y);
         a = (float) ((-vertice.y)/Math.pow(-vertice.x,2));
